@@ -1,3 +1,5 @@
+import { CharacterLook } from './PixelCharacter';
+
 export type TileType = 
   | 'grass' | 'grass_dark' | 'path' | 'path_dark'
   | 'floor' | 'wall' | 'wall_top' | 'wall_left' | 'wall_right'
@@ -20,6 +22,7 @@ export interface NPCData {
   color: string;
   position: Position;
   sprite: string;
+  look: CharacterLook;
   systemPrompt: string;
   greeting: string;
 }

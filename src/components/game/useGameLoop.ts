@@ -77,17 +77,8 @@ export function useGameLoop() {
 
     setChatHistories(h => ({
       ...h,
-      [activeNPC]: [...(h[activeNPC] || []), userMsg, aiMsg],
+      [activeNPC]: [...(h[activeNPC] || []), aiMsg],
     }));
-    // Fix: we already added userMsg above, just add aiMsg
-    setChatHistories(h => {
-      const current = h[activeNPC] || [];
-      // Avoid duplicates - only add aiMsg to the list that already has userMsg
-      if (current[current.length - 1]?.role === 'user') {
-        return { ...h, [activeNPC]: [...current, aiMsg] };
-      }
-      return h;
-    });
     setIsThinking(false);
   }, [activeNPC, chatHistories]);
 

@@ -9,7 +9,7 @@ function isSolid(x: number, y: number): boolean {
   return SOLID_TILES.includes(tiles[y][x]);
 }
 
-function isNPCAt(x: number, y: number, activeNpcId?: string): boolean {
+function isNPCAt(x: number, y: number): boolean {
   return NPCS.some(n => n.position.x === x && n.position.y === y);
 }
 

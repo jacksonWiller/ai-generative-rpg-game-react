@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { NPCData, TILE_SIZE } from './types';
+import PixelCharacter from './PixelCharacter';
 
 interface Props {
   npc: NPCData;
@@ -75,18 +76,11 @@ export default function NPCSprite({ npc, isNearby, isActive, isThinking }: Props
 
       {/* NPC sprite */}
       <motion.div
-        className="flex items-center justify-center image-rendering-pixelated"
-        style={{ fontSize: TILE_SIZE * 0.7, width: TILE_SIZE, height: TILE_SIZE }}
-        animate={isActive ? { scale: 1.1, y: -3 } : {}}
-        variants={{
-          idle: {
-            scaleY: [1, 1.05, 1],
-            transition: { repeat: Infinity, duration: 2 },
-          },
-        }}
-        initial="idle"
+        className="flex items-center justify-center"
+        style={{ width: TILE_SIZE, height: TILE_SIZE }}
+        animate={isActive ? { scale: 1.15, y: -4 } : {}}
       >
-        {npc.sprite}
+        <PixelCharacter look={npc.look} size={TILE_SIZE * 0.85} animate={!isActive} />
       </motion.div>
     </div>
   );

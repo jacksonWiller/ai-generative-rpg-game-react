@@ -1,9 +1,7 @@
-import { OpenRouter } from '@openrouter/sdk';
 import type { NPCData, ChatMessage } from './types';
 
-const openRouter = new OpenRouter({
-  apiKey: import.meta.env.VITE_OPENROUTER_API_KEY ?? '',
-});
+const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY ?? '';
+const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 const GAME_CONTEXT = `Você é um personagem NPC em um jogo RPG 2D chamado "Pixel Paladins".
 O jogo se passa em "Echo Village", uma pequena vila pacífica cercada por florestas, montanhas e um lago.
@@ -20,24 +18,35 @@ export async function sendNPCMessage(
 ): Promise<string> {
   const systemPrompt = `${GAME_CONTEXT}\n\n${npc.systemPrompt}\n\nSua primeira fala de apresentação é: "${npc.greeting}"`;
 
-  const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
+  const messages = [
     { role: 'system', content: systemPrompt },
-    ...history.map(m => ({ role: m.role as 'user' | 'assistant', content: m.content })),
-    { role: 'user' as const, content: userMessage },
+    ...history.map(m => ({ role: m.role, content: m.content })),
+    { role: 'user', content: userMessage },
   ];
 
-  const completion = await openRouter.chat.send({
-    model: 'deepseek/deepseek-chat-v3-0324',
-    messages,
-    stream: false,
-    max_tokens: 200,
-    temperature: 0.85,
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': window.location.origin,
+      'X-Title': 'Pixel Paladins',
+    },
+    body: JSON.stringify({
+      model: 'deepseek/deepseek-chat-v3-0324',
+      messages,
+      max_tokens: 200,
+      temperature: 0.85,
+    }),
   });
 
-  const choice = completion.choices?.[0];
-  if (choice && 'message' in choice && choice.message?.content) {
-    return choice.message.content;
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`OpenRouter API error ${res.status}: ${errorText}`);
   }
 
-  return npc.greeting;
+  const data = await res.json();
+  const content = data.choices?.[0]?.message?.content;
+
+  return content || npc.greeting;
 }

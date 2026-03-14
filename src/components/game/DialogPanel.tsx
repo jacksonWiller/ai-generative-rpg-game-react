@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NPCData, ChatMessage } from './types';
+import PixelCharacter from './PixelCharacter';
 
 interface Props {
   npc: NPCData;
@@ -47,7 +48,7 @@ export default function DialogPanel({ npc, messages, isThinking, onSend, onClose
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b-2 border-foreground/10">
           <div className="flex items-center gap-2">
-            <span className="text-lg">{npc.sprite}</span>
+            <PixelCharacter spriteKey={npc.id} size={20} />
             <span className="font-pixel text-lg tracking-wider text-foreground">{npc.name}</span>
             <span className="font-system text-[10px] uppercase tracking-widest text-muted-foreground bg-muted px-1.5 py-0.5">
               {npc.tag}

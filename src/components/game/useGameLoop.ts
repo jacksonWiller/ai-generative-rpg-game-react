@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Position, SOLID_TILES, ChatMessage } from './types';
+import { Position, Direction, SOLID_TILES, ChatMessage } from './types';
 import { getMapTiles, NPCS, MAP_WIDTH, MAP_HEIGHT } from './mapData';
+import { sendNPCMessage } from './chatService';
 
 const tiles = getMapTiles();
 
@@ -19,6 +20,7 @@ function distance(a: Position, b: Position): number {
 
 export function useGameLoop() {
   const [playerPos, setPlayerPos] = useState<Position>({ x: 13, y: 12 });
+  const [playerDir, setPlayerDir] = useState<Direction>('right');
   const [activeNPC, setActiveNPC] = useState<string | null>(null);
   const [chatHistories, setChatHistories] = useState<Record<string, ChatMessage[]>>({});
   const [isThinking, setIsThinking] = useState(false);
@@ -35,6 +37,8 @@ export function useGameLoop() {
       if (isSolid(nx, ny) || isNPCAt(nx, ny)) return prev;
       return { x: nx, y: ny };
     });
+    if (dx < 0) setPlayerDir('left');
+    else if (dx > 0) setPlayerDir('right');
   }, [activeNPC]);
 
   const interact = useCallback(() => {
@@ -59,26 +63,26 @@ export function useGameLoop() {
 
     setIsThinking(true);
 
-    // Simulated AI response (will be replaced with real AI)
-    await new Promise(r => setTimeout(r, 800 + Math.random() * 1200));
+    try {
+      const aiContent = await sendNPCMessage(npc, prev, message);
+      const aiMsg: ChatMessage = { role: 'assistant', content: aiContent };
 
-    const responses = [
-      npc.greeting,
-      'Hmm, que interessante... Me conta mais sobre isso.',
-      'Sabe, eu estava pensando exatamente nisso hoje cedo.',
-      'Cada dia na vila traz uma nova surpresa, não é?',
-      'Isso me lembra de uma história antiga...',
-      'Você tem um jeito especial de ver as coisas.',
-    ];
-    const aiMsg: ChatMessage = {
-      role: 'assistant',
-      content: responses[Math.floor(Math.random() * responses.length)],
-    };
+      setChatHistories(h => ({
+        ...h,
+        [activeNPC]: [...(h[activeNPC] || []), aiMsg],
+      }));
+    } catch (err) {
+      console.error('AI response error:', err);
+      const fallbackMsg: ChatMessage = {
+        role: 'assistant',
+        content: npc.greeting,
+      };
+      setChatHistories(h => ({
+        ...h,
+        [activeNPC]: [...(h[activeNPC] || []), fallbackMsg],
+      }));
+    }
 
-    setChatHistories(h => ({
-      ...h,
-      [activeNPC]: [...(h[activeNPC] || []), aiMsg],
-    }));
     setIsThinking(false);
   }, [activeNPC, chatHistories]);
 
@@ -99,6 +103,7 @@ export function useGameLoop() {
 
   return {
     playerPos,
+    playerDir,
     activeNPC,
     nearbyNPC,
     chatHistories,

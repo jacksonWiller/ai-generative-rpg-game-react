@@ -12,6 +12,7 @@ import { useGameLoop } from './useGameLoop';
 export default function GameWorld() {
   const {
     playerPos,
+    playerDir,
     activeNPC,
     nearbyNPC,
     chatHistories,
@@ -60,10 +61,11 @@ export default function GameWorld() {
               isNearby={nearbyNPC?.id === npc.id}
               isActive={activeNPC === npc.id}
               isThinking={isThinking && activeNPC === npc.id}
+              playerPos={playerPos}
             />
           ))}
 
-          <PlayerSprite position={playerPos} />
+          <PlayerSprite position={playerPos} direction={playerDir} />
         </div>
       </motion.div>
 

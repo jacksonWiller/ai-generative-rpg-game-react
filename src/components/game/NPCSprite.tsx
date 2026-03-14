@@ -1,14 +1,30 @@
+import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NPCData, TILE_SIZE } from './types';
+import { NPCData, Position, TILE_SIZE } from './types';
+import PixelCharacter from './PixelCharacter';
 
 interface Props {
   npc: NPCData;
   isNearby: boolean;
   isActive: boolean;
   isThinking: boolean;
+  playerPos: Position;
 }
 
-export default function NPCSprite({ npc, isNearby, isActive, isThinking }: Props) {
+export default function NPCSprite({ npc, isNearby, isActive, isThinking, playerPos }: Props) {
+  const facing = useMemo<'left' | 'right'>(() => {
+    if (isNearby || isActive) {
+      return playerPos.x < npc.position.x ? 'left' : 'right';
+    }
+    return 'right';
+  }, [isNearby, isActive, playerPos.x, npc.position.x]);
+
+  const animDelay = useMemo(() => {
+    let hash = 0;
+    for (const ch of npc.id) hash = ((hash << 5) - hash) + ch.charCodeAt(0);
+    return (Math.abs(hash) % 1000) / 500;
+  }, [npc.id]);
+
   return (
     <div
       className="absolute z-10"
@@ -73,20 +89,28 @@ export default function NPCSprite({ npc, isNearby, isActive, isThinking }: Props
         )}
       </AnimatePresence>
 
+      {/* NPC shadow */}
+      <div
+        className="absolute left-1/2 -translate-x-1/2 rounded-full bg-black/20 blur-[1px]"
+        style={{ width: TILE_SIZE * 0.45, height: 5, bottom: 1 }}
+      />
+
       {/* NPC sprite */}
       <motion.div
-        className="flex items-center justify-center image-rendering-pixelated"
-        style={{ fontSize: TILE_SIZE * 0.7, width: TILE_SIZE, height: TILE_SIZE }}
-        animate={isActive ? { scale: 1.1, y: -3 } : {}}
-        variants={{
-          idle: {
-            scaleY: [1, 1.05, 1],
-            transition: { repeat: Infinity, duration: 2 },
-          },
-        }}
-        initial="idle"
+        className="flex items-end justify-center w-full h-full"
+        animate={
+          isActive
+            ? { y: -3, scale: 1.05 }
+            : { y: [0, -1.5, 0] }
+        }
+        transition={
+          isActive
+            ? { type: 'spring', stiffness: 300, damping: 20 }
+            : { duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: animDelay }
+        }
+        style={npc.id === 'luna' ? { filter: 'drop-shadow(0 0 4px rgba(155, 89, 182, 0.4))' } : undefined}
       >
-        {npc.sprite}
+        <PixelCharacter spriteKey={npc.id} direction={facing} size={TILE_SIZE * 0.7} />
       </motion.div>
     </div>
   );

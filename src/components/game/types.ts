@@ -29,6 +29,8 @@ export interface ChatMessage {
   content: string;
 }
 
+export type Direction = 'left' | 'right';
+
 export const TILE_SIZE = 48;
 
 export const SOLID_TILES: TileType[] = [

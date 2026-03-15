@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Position, Direction, SOLID_TILES, ChatMessage } from './types';
+import { Position, Direction, SOLID_TILES, ChatMessage, NPCAction } from './types';
 import { getMapTiles, NPCS, MAP_WIDTH, MAP_HEIGHT } from './mapData';
-import { sendNPCMessage } from './chatService';
+import { sendNPCMessage, parseNPCActions } from './chatService';
 
 const tiles = getMapTiles();
 
@@ -10,12 +10,26 @@ function isSolid(x: number, y: number): boolean {
   return SOLID_TILES.includes(tiles[y][x]);
 }
 
-function isNPCAt(x: number, y: number): boolean {
-  return NPCS.some(n => n.position.x === x && n.position.y === y);
+function isNPCAt(x: number, y: number, npcPositions: Record<string, Position>, excludeId?: string): boolean {
+  return NPCS.some(n => {
+    if (n.id === excludeId) return false;
+    const pos = npcPositions[n.id] || n.position;
+    return pos.x === x && pos.y === y;
+  });
 }
 
 function distance(a: Position, b: Position): number {
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+function directionToDelta(dir: string): { dx: number; dy: number } {
+  switch (dir) {
+    case 'cima': return { dx: 0, dy: -1 };
+    case 'baixo': return { dx: 0, dy: 1 };
+    case 'esquerda': return { dx: -1, dy: 0 };
+    case 'direita': return { dx: 1, dy: 0 };
+    default: return { dx: 0, dy: 0 };
+  }
 }
 
 export function useGameLoop() {
@@ -24,28 +38,60 @@ export function useGameLoop() {
   const [activeNPC, setActiveNPC] = useState<string | null>(null);
   const [chatHistories, setChatHistories] = useState<Record<string, ChatMessage[]>>({});
   const [isThinking, setIsThinking] = useState(false);
+  const [npcPositions, setNpcPositions] = useState<Record<string, Position>>(() => {
+    const positions: Record<string, Position> = {};
+    for (const npc of NPCS) {
+      positions[npc.id] = { ...npc.position };
+    }
+    return positions;
+  });
   const playerPosRef = useRef(playerPos);
   playerPosRef.current = playerPos;
+  const npcPositionsRef = useRef(npcPositions);
+  npcPositionsRef.current = npcPositions;
 
-  const nearbyNPC = NPCS.find(n => distance(playerPosRef.current, n.position) <= 2);
+  const getNpcPos = useCallback((id: string) => npcPositionsRef.current[id] || NPCS.find(n => n.id === id)?.position || { x: 0, y: 0 }, []);
+
+  const nearbyNPC = NPCS.find(n => distance(playerPosRef.current, getNpcPos(n.id)) <= 2);
 
   const move = useCallback((dx: number, dy: number) => {
     if (activeNPC) return;
     setPlayerPos(prev => {
       const nx = prev.x + dx;
       const ny = prev.y + dy;
-      if (isSolid(nx, ny) || isNPCAt(nx, ny)) return prev;
+      if (isSolid(nx, ny) || isNPCAt(nx, ny, npcPositionsRef.current)) return prev;
       return { x: nx, y: ny };
     });
     if (dx < 0) setPlayerDir('left');
     else if (dx > 0) setPlayerDir('right');
   }, [activeNPC]);
 
+  const executeNpcActions = useCallback(async (npcId: string, actions: NPCAction[]) => {
+    for (const action of actions) {
+      if (action.type === 'move') {
+        const { dx, dy } = directionToDelta(action.direction);
+        for (let step = 0; step < action.steps; step++) {
+          await new Promise(resolve => setTimeout(resolve, 250));
+          setNpcPositions(prev => {
+            const current = prev[npcId];
+            if (!current) return prev;
+            const nx = current.x + dx;
+            const ny = current.y + dy;
+            if (isSolid(nx, ny)) return prev;
+            if (playerPosRef.current.x === nx && playerPosRef.current.y === ny) return prev;
+            if (isNPCAt(nx, ny, prev, npcId)) return prev;
+            return { ...prev, [npcId]: { x: nx, y: ny } };
+          });
+        }
+      }
+    }
+  }, []);
+
   const interact = useCallback(() => {
     if (activeNPC) return;
-    const npc = NPCS.find(n => distance(playerPosRef.current, n.position) <= 2);
+    const npc = NPCS.find(n => distance(playerPosRef.current, getNpcPos(n.id)) <= 2);
     if (npc) setActiveNPC(npc.id);
-  }, [activeNPC]);
+  }, [activeNPC, getNpcPos]);
 
   const closeDialog = useCallback(() => {
     setActiveNPC(null);
@@ -65,12 +111,17 @@ export function useGameLoop() {
 
     try {
       const aiContent = await sendNPCMessage(npc, prev, message);
-      const aiMsg: ChatMessage = { role: 'assistant', content: aiContent };
+      const { cleanText, actions } = parseNPCActions(aiContent);
+      const aiMsg: ChatMessage = { role: 'assistant', content: cleanText };
 
       setChatHistories(h => ({
         ...h,
         [activeNPC]: [...(h[activeNPC] || []), aiMsg],
       }));
+
+      if (actions.length > 0) {
+        executeNpcActions(activeNPC, actions);
+      }
     } catch (err) {
       console.error('AI response error:', err);
       const fallbackMsg: ChatMessage = {
@@ -84,7 +135,7 @@ export function useGameLoop() {
     }
 
     setIsThinking(false);
-  }, [activeNPC, chatHistories]);
+  }, [activeNPC, chatHistories, executeNpcActions]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -108,6 +159,7 @@ export function useGameLoop() {
     nearbyNPC,
     chatHistories,
     isThinking,
+    npcPositions,
     sendMessage,
     closeDialog,
     tiles,

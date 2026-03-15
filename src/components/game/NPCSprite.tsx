@@ -5,19 +5,20 @@ import PixelCharacter from './PixelCharacter';
 
 interface Props {
   npc: NPCData;
+  currentPos: Position;
   isNearby: boolean;
   isActive: boolean;
   isThinking: boolean;
   playerPos: Position;
 }
 
-export default function NPCSprite({ npc, isNearby, isActive, isThinking, playerPos }: Props) {
+export default function NPCSprite({ npc, currentPos, isNearby, isActive, isThinking, playerPos }: Props) {
   const facing = useMemo<'left' | 'right'>(() => {
     if (isNearby || isActive) {
-      return playerPos.x < npc.position.x ? 'left' : 'right';
+      return playerPos.x < currentPos.x ? 'left' : 'right';
     }
     return 'right';
-  }, [isNearby, isActive, playerPos.x, npc.position.x]);
+  }, [isNearby, isActive, playerPos.x, currentPos.x]);
 
   const animDelay = useMemo(() => {
     let hash = 0;
@@ -26,11 +27,14 @@ export default function NPCSprite({ npc, isNearby, isActive, isThinking, playerP
   }, [npc.id]);
 
   return (
-    <div
+    <motion.div
       className="absolute z-10"
+      animate={{
+        left: currentPos.x * TILE_SIZE,
+        top: currentPos.y * TILE_SIZE,
+      }}
+      transition={{ type: 'tween', duration: 0.2 }}
       style={{
-        left: npc.position.x * TILE_SIZE,
-        top: npc.position.y * TILE_SIZE,
         width: TILE_SIZE,
         height: TILE_SIZE,
       }}
@@ -112,6 +116,6 @@ export default function NPCSprite({ npc, isNearby, isActive, isThinking, playerP
       >
         <PixelCharacter spriteKey={npc.id} direction={facing} size={TILE_SIZE * 0.7} />
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

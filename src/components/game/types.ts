@@ -29,6 +29,14 @@ export interface ChatMessage {
   content: string;
 }
 
+export type MoveDirection = 'cima' | 'baixo' | 'esquerda' | 'direita';
+
+export interface NPCAction {
+  type: 'move';
+  direction: MoveDirection;
+  steps: number;
+}
+
 export type Direction = 'left' | 'right';
 
 export const TILE_SIZE = 48;

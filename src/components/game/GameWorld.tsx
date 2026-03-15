@@ -17,6 +17,7 @@ export default function GameWorld() {
     nearbyNPC,
     chatHistories,
     isThinking,
+    npcPositions,
     sendMessage,
     closeDialog,
     tiles,
@@ -58,6 +59,7 @@ export default function GameWorld() {
             <NPCSprite
               key={npc.id}
               npc={npc}
+              currentPos={npcPositions[npc.id] || npc.position}
               isNearby={nearbyNPC?.id === npc.id}
               isActive={activeNPC === npc.id}
               isThinking={isThinking && activeNPC === npc.id}

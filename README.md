@@ -1,12 +1,10 @@
 # 🛡️ Pixel Paladins
 
-## O Futuro dos NPCs com Inteligência Artificial
-
 <div align="center">
 
 ![Pixel Paladins Header](./doc/images/header-screenshot.png)
 
-**Um simulador social onde cada NPC é uma mente única, alimentada por IA**
+**Um RPG impulsionada por Inteligência Artificial**
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-50%20%2B-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18%2B-61DAFB?logo=react)](https://react.dev/)
@@ -17,13 +15,19 @@
 
 ---
 
-## 🎯 O Que É o Pixel Paladins?
+## 🎮 Sobre o Projeto
 
-**Pixel Paladins** é um laboratório de pesquisa em **IA Social para Jogos**, onde personagens não-jogáveis (NPCs) ganham vida através de modelos de linguagem avançados. Cada NPC possui personalidade única, memória de interações e capacidade de diálogo natural.
+**Pixel Paladins** é um **RPG ** que redefine a interação entre jogadores e NPCs (Non-Player Characters). Diferente dos jogos tradicionais onde os NPCs seguem scripts pré-determinados, aqui cada personagem é impulsionado por **Inteligência Artificial avançada**, criando diálogos únicos, dinâmicos e contextualizados a cada interação.
 
-### 🚀 Inovação Principal
+### 🌟 A Revolução dos NPCs com IA
 
-> **NPCs que realmente conversam** — não com scripts pré-definidos, mas com inteligência artificial que gera respostas únicas, contextualizadas e personalizadas para cada jogador.
+> **Converse como nunca antes** — Cada NPC possui personalidade própria, memória de interações passadas e capacidade de gerar respostas naturais em tempo real. Não há dois diálogos iguais!
+
+**O que torna o Pixel Paladins único:**
+- 🧠 **IA Generativa** — NPCs usam modelos de linguagem para criar respostas únicas
+- 💾 **Memória Persistente** — NPCs lembram de você e de conversas anteriores
+- 🎭 **Personalidades Únicas** — Cada personagem tem sua própria voz e comportamento
+- 🌍 **Contexto Rico** — Diálogos consideram hora, localização, relações e histórico
 
 ---
 
@@ -67,6 +71,12 @@
 ![Personagens Únicos](./doc/images/characters-showcase.png)
 
 *Cada NPC com personalidade, aparência e comportamento próprios*
+
+### 🎯 Gameplay
+
+![Gameplay](./doc/images/gameplay.png)
+
+*Explore, interaja e descubra histórias únicas em cada conversa*
 
 ---
 
@@ -252,33 +262,41 @@ pixel-paladins/
 
 ## 💡 Por Que Este Projeto?
 
-### Objetivos de Pesquisa
+### 🎯 Objetivos de Pesquisa
 
-1. **🤖 Integração de IA em Jogos**
-   - Como LLMs podem criar NPCs mais realistas e envolventes?
-   - Balanceamento entre qualidade da resposta e tempo de latência
+Este projeto explora as fronteiras entre **Inteligência Artificial** e **Desenvolvimento de Jogos**, com foco em:
 
-2. **🏗️ Arquitetura de Software**
-   - Padrões de design para aplicações complexas com IA
-   - Separação de responsabilidades entre UI, lógica e IA
+1. **🤖 NPCs Conscientes e Interativos**
+   - Como criar personagens que realmente "conversam" em vez de apenas seguir scripts
+   - Implementação de memória de longo prazo para NPCs
+   - Personalização dinâmica baseada no histórico de interações
 
-3. **🎭 Experiência do Usuário**
+2. **🏗️ Arquitetura de Software para IA Generativa**
+   - Padrões de design para integrar LLMs em aplicações em tempo real
+   - Separação de responsabilidades entre UI, lógica de jogo e IA
+   - Otimização de latência em chamadas de API
+
+3. **🎭 Experiência do Usuário Imersiva**
    - Interfaces naturais para interação com IA
    - Feedback visual durante processamento
-   - Transições suaves entre estados
+   - Transições suaves entre estados de jogo
 
-4. **⚡ Performance**
-   - Otimização de chamadas à IA
-   - Cache de respostas contextuais
-   - Previsão de ações do jogador
+4. **⚡ Performance e Escalabilidade**
+   - Cache inteligente de respostas contextuais
+   - Previsão de ações do jogador para reduzir latência percebida
+   - Gerenciamento eficiente de múltiplas instâncias de NPCs
 
 ---
 
-## 📚 Documentação
+## 📚 Documentação Completa
 
-- **[Documentação do Projeto](./doc/PROJECT_DOCUMENTATION.md)** — Visão geral completa
-- **[Sistema de IA](./doc/AI_SYSTEM.md)** — Detalhes técnicos dos NPCs
-- **[Arquitetura Técnica](./doc/TECHNICAL_ARCHITECTURE.md)** — Design de sistemas
+Para uma visão mais detalhada do projeto, consulte nossa documentação:
+
+| Documento | Descrição |
+|-----------|-----------|
+| **[Documentação do Projeto](./doc/PROJECT_DOCUMENTATION.md)** | Visão geral completa do projeto e objetivos |
+| **[Sistema de IA](./doc/AI_SYSTEM.md)** | Detalhes técnicos sobre como os NPCs funcionam |
+| **[Arquitetura Técnica](./doc/TECHNICAL_ARCHITECTURE.md)** | Design de sistemas e decisões de arquitetura |
 
 ---
 
@@ -293,6 +311,13 @@ Este projeto é um experimento em desenvolvimento. Contribuições são bem-vind
 3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
+
+### Áreas de Interesse
+
+- 🎨 **Melhorias na UI/UX** — Tornar a experiência mais imersiva
+- 🤖 **Otimização de IA** — Melhorar performance e qualidade das respostas
+- 🎮 **Novos NPCs** — Criar personagens com personalidades únicas
+- 📝 **Documentação** — Melhorar e expandir a documentação
 
 ---
 

@@ -1,10 +1,1 @@
-# Ignore todos os arquivos de imagem
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.webp
 
-# Exceto este arquivo de instruções
-!README.md
-!PLACEHOLDERS.md

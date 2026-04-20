@@ -135,12 +135,11 @@ graph LR
 
 | Categoria | Tecnologias |
 |-----------|-------------|
-| **Frontend** | React 18+, TypeScript, Vite |
+| **Frontend** | React, TypeScript, Vite |
 | **Estilização** | Tailwind CSS, Framer Motion |
 | **Componentes** | shadcn/ui |
 | **Roteamento** | React Router v6 |
 | **Estado** | TanStack Query |
-| **Testes** | Vitest, Playwright |
 | **Linting** | ESLint, Prettier |
 
 ---
